@@ -1,0 +1,1 @@
+A daily planner app that features a web interface for the dashboard to add and remove activities alongside a mobile app that have a read only list of activities. The goal is to plan today on day before and have today be spent according to the plan.
