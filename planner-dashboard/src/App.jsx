@@ -2,12 +2,20 @@
 import { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 
+import "./App.css";
+
+import AddTaskForm from "./components/AddTaskForm";
+import ActivityList from "./components/ActivityList";
+import TaskCard from "./components/TaskCard";
+
 function App() {
   const [activities, setActivities] = useState([]);
   const [newTask, setNewTask] = useState("");
   const [newDate, setNewDate] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   async function fetchActivities() {
+    setIsLoading(true);
     const { data, error } = await supabase
       .from("activities")
       .select("*")
@@ -18,6 +26,7 @@ function App() {
     } else {
       setActivities(data);
     }
+    setIsLoading(false);
   }
 
   useEffect(() => {
@@ -28,16 +37,21 @@ function App() {
     e.preventDefault();
     if (!newTask || !newDate) return;
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("activities")
-      .insert([{ title: newTask, planned_date: newDate, is_completed: false }]);
+      .insert([{ title: newTask, planned_date: newDate, is_completed: false }])
+      .select();
 
     if (error) {
       console.log("Error adding:", error);
     } else {
       setNewTask("");
       setNewDate("");
-      fetchActivities();
+      setActivities((prev) =>
+        [...prev, data[0]].sort(
+          (a, b) => new Date(a.planned_date) - new Date(b.planned_date),
+        ),
+      );
     }
   }
 
@@ -47,115 +61,81 @@ function App() {
     if (error) {
       console.log("Error deleting:", error);
     } else {
-      fetchActivities();
+      setActivities((prev) => prev.filter((activity) => activity.id !== id));
     }
   }
   return (
     <div
       style={{
-        maxWidth: "600px",
         margin: "40px auto",
         fontFamily: "sans-serif",
         padding: "20px",
       }}
     >
-      <h1 style={{ textAlign: "center", color: "#333" }}>My Daily Planner</h1>
-
       {/* ADD NEW TASK FORM */}
-      <form
-        onSubmit={addActivity}
-        style={{ display: "flex", gap: "10px", marginBottom: "30px" }}
-      >
-        <input
-          type="text"
-          placeholder="What needs to be done?"
-          value={newTask}
-          onChange={(e) => setNewTask(e.target.value)}
-          style={{
-            flex: 1,
-            padding: "10px",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-          }}
-        />
-        <input
-          type="date"
-          value={newDate}
-          onChange={(e) => setNewDate(e.target.value)}
-          style={{
-            padding: "10px",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-          }}
-        />
-        <button
-          type="submit"
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          Add
-        </button>
-      </form>
+      <AddTaskForm
+        addActivity={addActivity}
+        newTask={newTask}
+        setNewTask={setNewTask}
+        newDate={newDate}
+        setNewDate={setNewDate}
+      />
 
       {/* ACTIVITY LIST */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-        {activities.length === 0 ? (
-          <p style={{ textAlign: "center", color: "#666" }}>
-            No activities planned yet. Enjoy your day!
-          </p>
-        ) : (
-          activities.map((activity) => (
-            <div
-              key={activity.id}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "15px",
-                backgroundColor: "#f8f9fa",
-                borderRadius: "8px",
-                border: "1px solid #eee",
-              }}
-            >
-              <div>
-                <strong
-                  style={{
-                    display: "block",
-                    fontSize: "1.1rem",
-                    color: "#333",
-                  }}
-                >
-                  {activity.title}
-                </strong>
-                <span style={{ fontSize: "0.85rem", color: "#666" }}>
-                  {activity.planned_date}
-                </span>
-              </div>
-
-              <button
-                onClick={() => deleteActivity(activity.id)}
-                style={{
-                  padding: "5px 10px",
-                  backgroundColor: "#dc3545",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  fontSize: "0.9rem",
-                }}
-              >
-                Delete
-              </button>
+      {isLoading ? (
+        <p style={{ textAlign: "center" }}>Loading tasks...</p>
+      ) : (
+        <section className="task-cards">
+          <div>
+            <span>This Week's Pool</span>
+            <div className="week-card">
+              <ActivityList
+                activities={activities}
+                deleteActivity={deleteActivity}
+              />
             </div>
-          ))
-        )}
-      </div>
+          </div>
+          <div>
+            <span>Day 1</span>
+            <div className="day-card">
+              <TaskCard
+                activity={{
+                  id: 1,
+                  title: "Dummy Activity",
+                  planned_date: "2026-01-01",
+                }}
+                deleteActivity={deleteActivity}
+              />
+            </div>
+          </div>
+          <div>
+            <span>Day 2</span>
+            <div className="day-card">
+              <TaskCard
+                activity={{
+                  id: 1,
+                  title: "Dummy Activity",
+                  planned_date: "2026-01-01",
+                }}
+                deleteActivity={deleteActivity}
+              />
+            </div>
+          </div>
+          <div>
+            <span>Day 3</span>
+            <div className="day-card">
+              <TaskCard
+                activity={{
+                  id: 1,
+                  title: "Dummy Activity",
+                  planned_date: "2026-01-01",
+                }}
+                deleteActivity={deleteActivity}
+              />
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
