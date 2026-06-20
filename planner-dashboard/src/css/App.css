@@ -1,3 +1,9 @@
+.app {
+  margin: 40px auto;
+  font-family: "sans-serif";
+  padding: 20px;
+}
+
 .task-cards {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
