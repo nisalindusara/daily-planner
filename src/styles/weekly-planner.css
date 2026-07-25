@@ -1,0 +1,130 @@
+.screen {
+  background-color: #e5e5e5;
+  padding: 20px 16px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+.inner-screen {
+  display: flex;
+  gap: 10px;
+}
+
+.day-column {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0px;
+}
+
+.daydate-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.day-text {
+  font-size: 10px;
+  color: #999;
+  font-weight: 500;
+}
+
+.date-text {
+  font-size: 13px;
+  font-weight: 600;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.activities {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0px 4px;
+}
+
+.event-card {
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 5px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.title-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.time-text {
+  font-size: 10.5px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.planner-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.planner-viewport {
+  flex: 1;
+  overflow: hidden;
+  touch-action: pan-y; /* let vertical page scroll pass through, only horizontal drag is captured */
+}
+
+.planner-track {
+  display: flex;
+  cursor: grab;
+  user-select: none;
+}
+
+.planner-track:active {
+  cursor: grabbing;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #888;
+  cursor: pointer;
+  padding: 8px 12px;
+}
+
+.nav-btn:hover {
+  color: #444;
+}
+
+.planner-status {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+}
+
+.planner-status.error {
+  color: #c0392b;
+}
+
+.empty-day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  color: #b0b0b0;
+  font-size: 12px;
+  font-style: italic;
+  text-align: center;
+}
