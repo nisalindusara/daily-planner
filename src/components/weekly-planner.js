@@ -1,7 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { supabase } from "../utilities/Supabaseclient";
 
+// import styles
 import "../styles/weekly-planner.css";
+
+// import components
+import DayColumn from "./DayColumn";
 
 const VISIBLE_DAYS = 7;
 
@@ -48,49 +52,6 @@ function getWeekStart(date) {
 const DAY_LABELS = ["su.", "m.", "tu.", "w.", "th.", "f.", "sa."];
 function formatDayLabel(date) {
   return DAY_LABELS[date.getDay()];
-}
-
-// ---- presentational components ------------------------------------
-
-function EventCard({ title, time_range, color, block_height }) {
-  return (
-    <div
-      className="event-card"
-      style={{ background: color, minHeight: block_height }}
-    >
-      <span className="title-text">{title}</span>
-      <span className="time-text">{time_range}</span>
-    </div>
-  );
-}
-
-function DayColumn({ date, events, columnWidth }) {
-  const today = isSameDate(date, new Date());
-  return (
-    <div className="day-column" style={{ width: columnWidth }}>
-      <div className="daydate-container">
-        <span className="day-text">{formatDayLabel(date)}</span>
-        <span
-          className="date-text"
-          style={{
-            color: today ? "#fff" : "#444",
-            background: today ? "#4d7cf5" : "transparent",
-          }}
-        >
-          {date.getDate()}
-        </span>
-      </div>
-      <div className="activities">
-        {events.length === 0 ? (
-          <div className="empty-day">
-            <span>Plan the day</span>
-          </div>
-        ) : (
-          events.map((ev) => <EventCard key={ev.id} {...ev} />)
-        )}
-      </div>
-    </div>
-  );
 }
 
 // ---- main component --------------------------------------------------
@@ -270,6 +231,8 @@ export default function WeeklyPlanner() {
                   date={date}
                   columnWidth={columnWidth}
                   events={eventsByDate.get(toISODate(date)) || []}
+                  isSameDate={isSameDate}
+                  formatDayLabel={formatDayLabel}
                 />
               ))}
             </div>

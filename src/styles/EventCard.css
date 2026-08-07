@@ -1,0 +1,19 @@
+.event-card {
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 5px;
+}
+
+.title-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.time-text {
+  font-size: 10.5px;
+  color: rgba(0, 0, 0, 0.5);
+}
