@@ -66,7 +66,7 @@ export default function WeeklyPlanner() {
   // startDate = leftmost VISIBLE day (Monday of the current week on first load)
   const [startDate, setStartDate] = useState(() => getWeekStart(new Date()));
   const [activities, setActivities] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [addingDate, setAddingDate] = useState(null);
 
@@ -79,6 +79,7 @@ export default function WeeklyPlanner() {
   // Fetch a wide padded window around startDate. Re-runs any time startDate
   // changes (i.e. after any committed shift), so it works for arbitrarily
   // distant past/future dates — there's no hardcoded range limit.
+  const startTime = startDate.getTime();
   useEffect(() => {
     let cancelled = false;
     async function fetchWindow() {
@@ -112,7 +113,7 @@ export default function WeeklyPlanner() {
     return () => {
       cancelled = true;
     };
-  }, [startDate.getTime()]);
+  }, [startTime]);
 
   useEffect(() => {
     function measure() {
