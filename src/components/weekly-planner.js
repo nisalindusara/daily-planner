@@ -113,6 +113,7 @@ export default function WeeklyPlanner() {
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startTime]);
 
   useEffect(() => {
