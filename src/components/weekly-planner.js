@@ -6,6 +6,7 @@ import "../styles/weekly-planner.css";
 
 // import components
 import DayColumn from "./DayColumn";
+import AddActivity from "./AddActivity";
 
 const VISIBLE_DAYS = 7;
 
@@ -67,6 +68,7 @@ export default function WeeklyPlanner() {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [addingDate, setAddingDate] = useState(null);
 
   const [translate, setTranslate] = useState(REST_TRANSLATE);
   const [transitionOn, setTransitionOn] = useState(false);
@@ -233,6 +235,7 @@ export default function WeeklyPlanner() {
                   events={eventsByDate.get(toISODate(date)) || []}
                   isSameDate={isSameDate}
                   formatDayLabel={formatDayLabel}
+                  onAddClick={setAddingDate}
                 />
               ))}
             </div>
@@ -247,6 +250,17 @@ export default function WeeklyPlanner() {
         <div className="planner-status error">
           Couldn't load activities: {error}
         </div>
+      )}
+
+      {addingDate && (
+        <AddActivity
+          date={addingDate}
+          onClose={() => setAddingDate(null)}
+          onSaved={(newRow) => {
+            setActivities((prev) => [...prev, newRow]);
+            setAddingDate(null);
+          }}
+        />
       )}
     </div>
   );

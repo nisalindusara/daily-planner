@@ -2,7 +2,14 @@ import "../styles/DayColumn.css";
 
 import EventCard from "./EventCard";
 
-function DayColumn({ date, events, columnWidth, isSameDate, formatDayLabel }) {
+function DayColumn({
+  date,
+  events,
+  columnWidth,
+  isSameDate,
+  formatDayLabel,
+  onAddClick,
+}) {
   const today = isSameDate(date, new Date());
   return (
     <div className="day-column" style={{ width: columnWidth }}>
@@ -26,6 +33,15 @@ function DayColumn({ date, events, columnWidth, isSameDate, formatDayLabel }) {
         ) : (
           events.map((ev) => <EventCard key={ev.id} {...ev} />)
         )}
+        <button
+          className="add-activity-btn"
+          onClick={() => onAddClick(date)}
+          onPointerDown={(e) => e.stopPropagation()}
+          aria-label="Add Activity"
+          type="button"
+        >
+          +
+        </button>
       </div>
     </div>
   );
