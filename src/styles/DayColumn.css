@@ -41,17 +41,6 @@
   padding: 0px 4px;
 }
 
-.empty-day {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 120px;
-  color: #b0b0b0;
-  font-size: 12px;
-  font-style: italic;
-  text-align: center;
-}
-
 .add-activity-btn {
   background: none;
   border: none;

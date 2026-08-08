@@ -8,7 +8,7 @@ import "../styles/weekly-planner.css";
 import DayColumn from "./DayColumn";
 import AddActivity from "./AddActivity";
 
-const MOBILE_BREAKPOINT = 640;
+const MOBILE_BREAKPOINT = 800;
 
 function getVisibleDays() {
   return window.innerWidth < MOBILE_BREAKPOINT ? 1 : 7;
@@ -70,6 +70,7 @@ export default function WeeklyPlanner() {
   // startDate = leftmost VISIBLE day (Monday of the current week on first load)
   const [startDate, setStartDate] = useState(() => getWeekStart(new Date()));
   const [activities, setActivities] = useState([]);
+  const [defaults, setDefaults] = useState([]);
   const [, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [addingDate, setAddingDate] = useState(null);
@@ -137,6 +138,20 @@ export default function WeeklyPlanner() {
     setTransitionOn(false);
     setTranslate(-BUFFER_DAYS * columnWidth);
   }, [columnWidth]);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchDefaults() {
+      const { data, error } = await supabase
+        .from("default_activities")
+        .select("*");
+      if (!cancelled && !error) setDefaults(data);
+    }
+    fetchDefaults();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   function animateTo(target, dayDelta) {
     pendingDelta.current = dayDelta;
@@ -210,6 +225,27 @@ export default function WeeklyPlanner() {
     eventsByDate.get(key).push(row);
   }
 
+  function getDayEvents(iso) {
+    const real = eventsByDate.get(iso) || [];
+    const overriddenKeys = new Set(
+      real.filter((r) => r.activity_key).map((r) => r.activity_key),
+    );
+    const virtual = defaults
+      .filter((d) => !overriddenKeys.has(d.activity_key))
+      .map((d) => ({
+        id: `virtual-${d.activity_key}-${iso}`,
+        activity_date: iso,
+        title: d.title,
+        time_range: d.time_range,
+        color: d.color,
+        block_height: d.block_height,
+        sort_order: d.sort_order,
+        activity_key: d.activity_key,
+        isVirtual: true,
+      }));
+    return [...real, ...virtual].sort((a, b) => a.sort_order - b.sort_order);
+  }
+
   return (
     <div className="screen">
       <div className="planner-header">
@@ -239,7 +275,7 @@ export default function WeeklyPlanner() {
                   key={toISODate(date)}
                   date={date}
                   columnWidth={columnWidth}
-                  events={eventsByDate.get(toISODate(date)) || []}
+                  events={getDayEvents(toISODate(date))}
                   isSameDate={isSameDate}
                   formatDayLabel={formatDayLabel}
                   onAddClick={setAddingDate}

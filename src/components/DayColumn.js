@@ -11,6 +11,7 @@ function DayColumn({
   onAddClick,
 }) {
   const today = isSameDate(date, new Date());
+
   return (
     <div className="day-column" style={{ width: columnWidth }}>
       <div className="daydate-container">
@@ -26,13 +27,8 @@ function DayColumn({
         </span>
       </div>
       <div className="activities">
-        {events.length === 0 ? (
-          <div className="empty-day">
-            <span>Plan the day</span>
-          </div>
-        ) : (
-          events.map((ev) => <EventCard key={ev.id} {...ev} />)
-        )}
+        {events.length !== 0 &&
+          events.map((ev) => <EventCard key={ev.id} {...ev} />)}
         <button
           className="add-activity-btn"
           onClick={() => onAddClick(date)}
