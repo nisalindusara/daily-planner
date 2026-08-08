@@ -8,7 +8,11 @@ import "../styles/weekly-planner.css";
 import DayColumn from "./DayColumn";
 import AddActivity from "./AddActivity";
 
-const VISIBLE_DAYS = 7;
+const MOBILE_BREAKPOINT = 640;
+
+function getVisibleDays() {
+  return window.innerWidth < MOBILE_BREAKPOINT ? 1 : 7;
+}
 
 // How many extra days are rendered off-screen on each side, so a single
 // drag gesture can travel that many days before running out of columns.
@@ -60,7 +64,7 @@ function formatDayLabel(date) {
 export default function WeeklyPlanner() {
   const viewportRef = useRef(null);
   const [columnWidth, setColumnWidth] = useState(0);
-
+  const [visibleDays, setVisibleDays] = useState(getVisibleDays);
   const REST_TRANSLATE = -BUFFER_DAYS * columnWidth;
 
   // startDate = leftmost VISIBLE day (Monday of the current week on first load)
@@ -86,7 +90,7 @@ export default function WeeklyPlanner() {
       setLoading(true);
       const from = toISODate(addDays(startDate, -FETCH_PAD_DAYS));
       const to = toISODate(
-        addDays(startDate, VISIBLE_DAYS - 1 + FETCH_PAD_DAYS),
+        addDays(startDate, visibleDays - 1 + FETCH_PAD_DAYS),
       );
       const { data, error } = await supabase
         .from("activities")
@@ -119,7 +123,9 @@ export default function WeeklyPlanner() {
   useEffect(() => {
     function measure() {
       if (viewportRef.current) {
-        setColumnWidth(viewportRef.current.offsetWidth / VISIBLE_DAYS);
+        const vd = getVisibleDays();
+        setVisibleDays(vd);
+        setColumnWidth(viewportRef.current.offsetWidth / vd);
       }
     }
     measure();
@@ -192,8 +198,7 @@ export default function WeeklyPlanner() {
     dragRef.current.lastDelta = 0;
   }
 
-  // trackDates: BUFFER_DAYS before + VISIBLE_DAYS visible + BUFFER_DAYS after
-  const totalColumns = VISIBLE_DAYS + BUFFER_DAYS * 2;
+  const totalColumns = visibleDays + BUFFER_DAYS * 2;
   const trackDates = Array.from({ length: totalColumns }, (_, i) =>
     addDays(startDate, i - BUFFER_DAYS),
   );
