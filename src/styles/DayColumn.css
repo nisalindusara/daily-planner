@@ -55,3 +55,10 @@
 .add-activity-btn:hover {
   color: #4d7cf5;
 }
+
+.gap-indicator {
+  font-size: 11px;
+  color: #b0b0b0;
+  text-align: center;
+  padding: 4px 0;
+}

@@ -240,10 +240,46 @@ export default function WeeklyPlanner() {
         color: d.color,
         block_height: d.block_height,
         sort_order: d.sort_order,
+        end_minutes: d.end_minutes,
         activity_key: d.activity_key,
         isVirtual: true,
       }));
-    return [...real, ...virtual].sort((a, b) => a.sort_order - b.sort_order);
+
+    const sorted = [...real, ...virtual].sort(
+      (a, b) => a.sort_order - b.sort_order,
+    );
+
+    // Insert a gap marker wherever there's genuinely free time. Uses the
+    // running latest end-time seen so far (not just the previous task's end)
+    // so overlapping tasks don't produce an incorrect gap.
+    const withGaps = [];
+    let runningEnd = null;
+    for (const ev of sorted) {
+      const start = ev.sort_order;
+      const end = ev.end_minutes ?? start;
+      if (runningEnd !== null) {
+        const gapMinutes = start - runningEnd;
+        if (gapMinutes > 0) {
+          withGaps.push({
+            id: `gap-${iso}-${start}`,
+            isGap: true,
+            label: formatGapLabel(gapMinutes),
+          });
+        }
+      }
+      withGaps.push(ev);
+      runningEnd = runningEnd === null ? end : Math.max(runningEnd, end);
+    }
+
+    return withGaps;
+  }
+
+  function formatGapLabel(minutes) {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    if (h === 0) return `${m}m free`;
+    if (m === 0) return `${h}h free`;
+    return `${h}h ${m}m free`;
   }
 
   return (

@@ -27,8 +27,15 @@ function DayColumn({
         </span>
       </div>
       <div className="activities">
-        {events.length !== 0 &&
-          events.map((ev) => <EventCard key={ev.id} {...ev} />)}
+        {events.map((ev) =>
+          ev.isGap ? (
+            <div key={ev.id} className="gap-indicator">
+              {ev.label}
+            </div>
+          ) : (
+            <EventCard key={ev.id} {...ev} />
+          ),
+        )}
         <button
           className="add-activity-btn"
           onClick={() => onAddClick(date)}

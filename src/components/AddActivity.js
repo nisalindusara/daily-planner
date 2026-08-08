@@ -70,6 +70,7 @@ function AddActivity({ date, onClose, onSaved }) {
         color,
         block_height: blockHeight,
         sort_order: startMin,
+        end_minutes: endMin,
       })
       .select()
       .single();
